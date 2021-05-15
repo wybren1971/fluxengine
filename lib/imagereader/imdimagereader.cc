@@ -193,7 +193,7 @@ public:
 			int startSectorId = 0;
 			bool mfm = false;
 			inputFile.seekg(0, inputFile.end);
-			int inputFileSize = inputFile.tellg();	// determine filesize
+			uint32_t inputFileSize = inputFile.tellg();	// determine filesize
 			inputFile.seekg(0, inputFile.beg);
 			Bytes data;
 			data.writer() += inputFile;

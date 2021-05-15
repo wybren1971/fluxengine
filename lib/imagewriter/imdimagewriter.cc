@@ -13,7 +13,7 @@
 static const char LABEL[] = "IMD file by fluxengine"; //22 karakters
 static uint8_t getModulationandSpeed(int flags)
 {
-	if ((flags>980) and (flags<1020)) //HD disk
+	if ((flags>950) and (flags<1050)) //HD disk 5% discrepency is ok 1000*5% = 50
 	{
 		/* 500 kbps */
 		if (IbmDecoder::getuseFm() == true)
@@ -24,7 +24,7 @@ static uint8_t getModulationandSpeed(int flags)
 		{
 			return 3;
 		}
-	} else if ((flags>580) and (flags<620))//dont know exactly what the clock is for 300kbps assuming twice just as 500kbps en 250kbps
+	} else if ((flags>570) and (flags<630))//dont know exactly what the clock is for 300kbps assuming twice just as 500kbps en 250kbps
 		/* 300 kbps*/
 	{
 		if (IbmDecoder::getuseFm() == true)
@@ -35,7 +35,7 @@ static uint8_t getModulationandSpeed(int flags)
 		{
 			return 4;
 		}
-	} else if ((flags>480) and (flags<520)) //DD disk
+	} else if ((flags>475) and (flags<525)) //DD disk
 		 /* 250 kbps */
 		{
 			if (IbmDecoder::getuseFm() == true)
