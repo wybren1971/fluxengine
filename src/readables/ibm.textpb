@@ -1,0 +1,30 @@
+comment: 'PC 3.5"/5.25" any double sided format'
+
+input {
+	flux {
+		drive {}
+	}
+}
+
+output {
+	image {
+		filename: "ibm.img"
+		img {}
+	}
+}
+
+decoder {
+	ibm {}
+}
+
+cylinders {
+	start: 0
+	end: 81
+}
+
+heads {
+	start: 0
+	end: 1
+}
+
+

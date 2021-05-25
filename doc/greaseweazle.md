@@ -6,8 +6,16 @@ The FluxEngine isn't the only project which does this; another one is the
 completely open source solution. This requires more work to set up (or you can
 buy a prebuilt GreaseWeazle board), but provides completely open source
 hardware which doesn't require the use of the Cypress Windows-based tools that
-the FluxEngine does. Luckily, the FluxEngine software supports it
-out-of-the-box --- just plug it in and nearly everything should work.
+the FluxEngine does. Luckily, the FluxEngine software supports it almost
+out-of-the-box --- just plug it in and nearly everything should work. You will
+need to tell FluxEngine which serial port the GreaseWeazle is plugged
+in with:
+
+```
+fluxengine read ibm -o ibm.img --usb.greaseweazle=/dev/ttyACM3
+```
+
+On Windows, use COM1/COM2/COM3 etc for the port.
 
 I am aware that having _software_ called FluxEngine and _hardware_ called
 FluxEngine makes things complicated when you're not using the FluxEngine client
@@ -33,7 +41,9 @@ Driver'. Once done, the GreaseWeazle will be visible to the FluxEngine client.
 **Important note!** Unfortunately, now, the original GreaseWeazle client won't
 work --- you can't use both drivers at once. I'm working on this. To switch
 back to the original driver, for using the GreaseWeazle client software
-instead, open up Zadig again, go through the same process, but make sure the left Driver box says `WinUSB` and the right one says `USB Serial (CDC)`. Now, when you press 'Replace Driver' the original driver will be restored.
+instead, open up Zadig again, go through the same process, but make sure the
+left Driver box says `WinUSB` and the right one says `USB Serial (CDC)`. Now,
+when you press 'Replace Driver' the original driver will be restored.
 
 What works
 ----------

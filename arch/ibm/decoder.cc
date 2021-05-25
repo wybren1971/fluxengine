@@ -6,12 +6,12 @@
 #include "decoders/fluxmapreader.h"
 #include "sector.h"
 #include "record.h"
+#include "arch/ibm/ibm.pb.h"
+#include "proto.h"
 #include <string.h>
 
 static_assert(std::is_trivially_copyable<IbmIdam>::value,
 		"IbmIdam is not trivially copyable");
-
-bool IbmDecoder::_useFm=false;
 
 /*
  * The markers at the beginning of records are special, and have
@@ -91,14 +91,9 @@ const FluxMatchers ANY_RECORD_PATTERN(
     }
 );
 
-bool IbmDecoder::getuseFm()
+std::set<unsigned> IbmDecoder::requiredSectors(Track& track) const
 {
-	return _useFm;
-}
-
-void IbmDecoder::setuseFm(bool newuseFm)
-{
-	_useFm = newuseFm;
+	return iterate(_config.required_sectors());
 }
 
 AbstractDecoder::RecordType IbmDecoder::advanceToNextRecord()
@@ -109,17 +104,10 @@ AbstractDecoder::RecordType IbmDecoder::advanceToNextRecord()
     /* If this is the MFM prefix byte, the the decoder is going to expect three
      * extra bytes on the front of the header. */
     _currentHeaderLength = (matcher == &MFM_PATTERN) ? 3 : 0;
-    //MFM prefix byte found. so encoding is with MFM
-    
+
     Fluxmap::Position here = tell();
     if (_currentHeaderLength > 0)
-    {
         readRawBits(_currentHeaderLength*16);
-        _useFm = false;
-    } else
-    {   
-        _useFm = true;
-    }
     auto idbits = readRawBits(16);
     const Bytes idbytes = decodeFmMfm(idbits);
     uint8_t id = idbytes.slice(0, 1)[0];
@@ -150,14 +138,14 @@ void IbmDecoder::decodeSectorRecord()
     br.read_8(); /* skip ID byte */
     _sector->logicalTrack = br.read_8();
     _sector->logicalSide = br.read_8();
-    _sector->logicalSector = br.read_8() - _sectorBase;
+    _sector->logicalSector = br.read_8() - _config.sector_id_base();
     _currentSectorSize = 1 << (br.read_8() + 7);
     uint16_t wantCrc = br.read_be16();
     uint16_t gotCrc = crc16(CCITT_POLY, bytes.slice(0, _currentHeaderLength + 5));
     if (wantCrc == gotCrc)
         _sector->status = Sector::DATA_MISSING; /* correct but unintuitive */
 
-    if (_ignoreSideByte)
+    if (_config.ignore_side_byte())
         _sector->logicalSide = _sector->physicalSide;
 }
 
