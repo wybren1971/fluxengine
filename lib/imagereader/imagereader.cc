@@ -45,6 +45,8 @@ void ImageReader::updateConfigForFilename(ImageReaderProto* proto, const std::st
 		{".d81",      [&]() { proto->mutable_img(); }},
 		{".diskcopy", [&]() { proto->mutable_diskcopy(); }},
 		{".img",      [&]() { proto->mutable_img(); }},
+		{".imd",      [&]() { proto->mutable_imd(); }},
+		{".IMD",      [&]() { proto->mutable_imd(); }},
 		{".st",       [&]() { proto->mutable_img(); }},
 	};
 

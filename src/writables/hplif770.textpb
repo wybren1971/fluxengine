@@ -28,7 +28,7 @@ encoder {
 			sector_size: 1024
 			gap0: 80
 			gap2: 22
-			gap3: 44
+			gap3: 80
 			sector_skew: "01234"
 		}
 	}

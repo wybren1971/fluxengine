@@ -22,6 +22,8 @@ public:
 		const ImageWriterProto& config);
     static std::unique_ptr<ImageWriter> createDiskCopyImageWriter(
 		const ImageWriterProto& config);
+    static std::unique_ptr<ImageWriter> createImdImageWriter(
+		const ImageWriterProto& config);
 
 public:
 	void printMap(const SectorSet& sectors);

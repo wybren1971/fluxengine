@@ -14,6 +14,9 @@ std::unique_ptr<ImageWriter> ImageWriter::create(const ImageWriterProto& config)
 {
 	switch (config.format_case())
 	{
+		case ImageWriterProto::kImd:
+			return ImageWriter::createImdImageWriter(config);
+
 		case ImageWriterProto::kImg:
 			return ImageWriter::createImgImageWriter(config);
 
@@ -41,16 +44,20 @@ void ImageWriter::updateConfigForFilename(ImageWriterProto* proto, const std::st
 		{".d81",      [&]() { proto->mutable_img(); }},
 		{".diskcopy", [&]() { proto->mutable_diskcopy(); }},
 		{".img",      [&]() { proto->mutable_img(); }},
+		{".imd",      [&]() { proto->mutable_imd(); }},
 		{".ldbs",     [&]() { proto->mutable_ldbs(); }},
 		{".st",       [&]() { proto->mutable_img(); }},
 	};
+	std::string FilenameLower;
+	FilenameLower = filename;
+	for (auto & c: FilenameLower) c = tolower(c); //compare case insensitive if an image on disk is written as .Img it is also oke.
 
 	for (const auto& it : formats)
 	{
-		if (endsWith(filename, it.first))
+		if (endsWith(FilenameLower, it.first))
 		{
 			it.second();
-			proto->set_filename(filename);
+			proto->set_filename(filename); //use here original filename again.
 			return;
 		}
 	}

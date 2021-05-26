@@ -344,6 +344,7 @@ buildlibrary libbackend.a \
     lib/imagereader/jv3imagereader.cc \
     lib/imagewriter/d64imagewriter.cc \
     lib/imagewriter/diskcopyimagewriter.cc \
+    lib/imagewriter/imdimagewriter.cc \
     lib/imagewriter/imagewriter.cc \
     lib/imagewriter/imgimagewriter.cc \
     lib/imagewriter/ldbsimagewriter.cc \
