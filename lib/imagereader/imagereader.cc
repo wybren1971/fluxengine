@@ -46,13 +46,16 @@ void ImageReader::updateConfigForFilename(ImageReaderProto* proto, const std::st
 		{".diskcopy", [&]() { proto->mutable_diskcopy(); }},
 		{".img",      [&]() { proto->mutable_img(); }},
 		{".imd",      [&]() { proto->mutable_imd(); }},
-		{".IMD",      [&]() { proto->mutable_imd(); }},
 		{".st",       [&]() { proto->mutable_img(); }},
 	};
 
+	std::string FilenameLower;
+	FilenameLower = filename;
+	for (auto & c: FilenameLower) c = tolower(c); //compare case insensitive if an image on disk is written as .Img it is also oke.
+
 	for (const auto& it : formats)
 	{
-		if (endsWith(filename, it.first))
+		if (endsWith(FilenameLower, it.first))
 		{
 			it.second();
 			proto->set_filename(filename);
