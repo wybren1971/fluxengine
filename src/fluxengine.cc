@@ -6,10 +6,19 @@ typedef int command_cb(int agrc, const char* argv[]);
 
 extern command_cb mainAnalyseDriveResponse;
 extern command_cb mainAnalyseLayout;
+extern command_cb mainFormat;
+extern command_cb mainGetDiskInfo;
+extern command_cb mainGetFile;
+extern command_cb mainGetFileInfo;
 extern command_cb mainInspect;
+extern command_cb mainLs;
+extern command_cb mainMkDir;
+extern command_cb mainMv;
+extern command_cb mainPutFile;
 extern command_cb mainRawRead;
 extern command_cb mainRawWrite;
 extern command_cb mainRead;
+extern command_cb mainRm;
 extern command_cb mainRpm;
 extern command_cb mainSeek;
 extern command_cb mainTestBandwidth;
@@ -32,8 +41,17 @@ static std::vector<Command> commands =
 	{ "analyse",           mainAnalyse,           "Disk and drive analysis tools." },
     { "read",              mainRead,              "Reads a disk, producing a sector image.", },
     { "write",             mainWrite,             "Writes a sector image to a disk.", },
+	{ "format",            mainFormat,            "Format a disk and make a file system on it.", },
 	{ "rawread",           mainRawRead,           "Reads raw flux from a disk. Warning: you can't use this to copy disks.", },
     { "rawwrite",          mainRawWrite,          "Writes a flux file to a disk. Warning: you can't use this to copy disks.", },
+	{ "getdiskinfo",       mainGetDiskInfo,       "Read volume metadata off a disk (or image).", },
+	{ "ls",                mainLs,                "Show files on disk (or image).", },
+	{ "mv",                mainMv,                "Rename a file on a disk (or image).", },
+	{ "rm",                mainRm,                "Deletes a file (or directory) off a disk (or image).", },
+	{ "getfile",           mainGetFile,           "Read a file off a disk (or image).", },
+	{ "getfileinfo",       mainGetFileInfo,       "Read file metadata off a disk (or image).", },
+	{ "putfile",           mainPutFile,           "Write a file to disk (or image).", },
+	{ "mkdir",             mainMkDir,             "Create a directory on disk (or image).", },
     { "rpm",               mainRpm,               "Measures the disk rotational speed.", },
     { "seek",              mainSeek,              "Moves the disk head.", },
     { "test",              mainTest,              "Various testing commands.", },
@@ -121,7 +139,7 @@ void showProfiles(const std::string& command, const std::map<std::string, std::s
 		ConfigProto config;
 		if (!config.ParseFromString(it.second))
 			Error() << "couldn't load config proto";
-		if (config.is_extension())
+		if (config.is_extension() && (it.first[0] != '_'))
 			std::cout << fmt::format("  {}: {}\n", it.first, config.comment());
 	}
 

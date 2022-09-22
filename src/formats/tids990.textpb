@@ -2,22 +2,48 @@ comment: 'Texas Instruments DS990 1126kB 8" DSSD'
 
 image_reader {
 	filename: "tids990.img"
-	img {
-		tracks: 77
-		sides: 2
-		trackdata {
-			sector_size: 288
-			sector_range {
-				start_sector: 0
-				sector_count: 26
-			}
-		}
-	}
+	img {}
 }
 
 image_writer {
 	filename: "tids990.img"
 	img {}
+}
+
+layout {
+	tracks: 77
+	sides: 2
+	layoutdata {
+		sector_size: 288
+		physical {
+			sector: 1
+			sector: 22
+			sector: 17
+			sector: 12
+			sector: 7
+			sector: 2
+			sector: 23
+			sector: 18
+			sector: 13
+			sector: 8
+			sector: 3
+			sector: 24
+			sector: 19
+			sector: 14
+			sector: 9
+			sector: 4
+			sector: 25
+			sector: 20
+			sector: 15
+			sector: 10
+			sector: 5
+			sector: 0
+			sector: 21
+			sector: 16
+			sector: 11
+			sector: 6
+		}
+	}
 }
 
 encoder {
@@ -27,14 +53,3 @@ encoder {
 decoder {
 	tids990 {}
 }
-
-tracks {
-	start: 0
-	end: 76
-}
-
-heads {
-	start: 0
-	end: 1
-}
-

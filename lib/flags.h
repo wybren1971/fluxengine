@@ -3,13 +3,13 @@
 
 class DataSpec;
 class Flag;
+class ConfigProto;
 
 class FlagGroup
 {
-private:
-    FlagGroup(const FlagGroup& group);
 public:
     FlagGroup();
+    FlagGroup(std::initializer_list<FlagGroup*> groups);
 
 public:
     void parseFlags(int argc, const char* argv[],
@@ -20,6 +20,9 @@ public:
 		std::function<bool(const std::string&)> callback =
 			[](const auto&){ return false; });
 	void parseFlagsWithConfigFiles(int argc, const char* argv[],
+			const std::map<std::string, std::string>& configFiles);
+	static ConfigProto parseSingleConfigFile(
+			const std::string& filename,
 			const std::map<std::string, std::string>& configFiles);
 	static void parseConfigFile(
 			const std::string& filename,

@@ -4,10 +4,15 @@ FluxEngine
 (If you're reading this on GitHub, the formatting's a bit messed up. [Try the
 version on cowlark.com instead.](http://cowlark.com/fluxengine/))
 
-**Breaking news!** As of 2021-05-21, the command line environment has changed
-_substantially_ (to make it more consistent and flexible, and allow some new
-backend features like multi-format IBM scheme disks, which are popular with
-CP/M). If things don't work the way you expect, please check the documentation.
+**Breaking news!** As of 2022-09-09, there's new [filesystem
+support](doc/filesystem.md). Read (and sometimes write) files directly from
+(and to) your disks, with eight different file systems! It works in the GUI,
+too, which is available for Linux (and other Unix clones), Windows and OSX. See
+the details below.
+
+<div style="text-align: center">
+<a href="doc/screenshot.jpg"><img src="doc/screenshot.jpg" style="width:60%" alt="screenshot of the GUI in action"></a>
+</div>
 
 What?
 -----
@@ -67,6 +72,10 @@ following friendly articles:
   - [Configuring for your drive](doc/drives.md) ∾ but I don't have a 80 track
     drive! ∾ reading and writing 40 track disks ∾ Shugart and Apple II
 
+  - [Direct filesystem access](doc/filesystem.md) ∾ imaging files is a pain
+    ∾ accessing files directly ∾ features and limitation ∾ it works on disk
+    images too, you say?
+    
   - [Troubleshooting dubious disks](doc/problems.md) ∾ it's not an exact
     science ∾ the sector map ∾ clock detection and the histogram
 
@@ -204,8 +213,9 @@ There may or may not be anything interesting there.
 License
 -------
 
-Everything here _except the contents of the `dep` directory_ is © 2019 David
-Given and is licensed under the MIT open source license. Please see
+Everything here _except the contents of the `dep` directory_ is © 2022 The
+FluxEngine Authors (mostly me, David Given; see the VCS history for the other
+people) and is licensed under the MIT open source license. Please see
 [COPYING](COPYING) for the full text. The tl;dr is: you can do what you like
 with it provided you don't claim you wrote it.
 
@@ -233,3 +243,23 @@ binaries.
 As an exception, `dep/libusbp` contains the libusbp library, taken from
 https://github.com/pololu/libusbp. It is MIT licensed. Please see the contents
 of the directory for the full text.
+
+As an exception, `dep/fatfs` contains the fatfs library, taken from
+http://elm-chan.org/fsw/ff/00index_e.html. It is single-clause BSD licensed.
+Please see the contents of the directory for the full text.
+
+As an exception, `dep/adflib` contains the adflib library, written by Laurent
+Clevy et al, taken from https://github.com/lclevy/ADFlib. It is GPL 2.0
+licensed. Please see the contents of the directory for the full text.
+
+As an exception, `dep/hfsutils` contains a partial copy of the hfsutils
+package, written by Robert Leslie et al, taken from
+https://www.mars.org/home/rob/proj/hfs. It is GPL 2.0 licensed. Please see the
+contents of the directory for the full text.
+
+__Important:__ Because of all these exceptions, if you distribute the
+FluxEngine package as a whole, you must comply with the terms of _all_ of the
+licensing terms. This means that __effectively the FluxEngine package is
+distributable under the terms of the GPL 2.0__.
+
+

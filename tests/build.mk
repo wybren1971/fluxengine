@@ -14,11 +14,16 @@ OBJS += $(OBJDIR)/tests/$1.o
 $(call use-library, $(OBJDIR)/tests/$1.exe, $(OBJDIR)/tests/$1.o, LIBFLUXENGINE)
 $(call use-library, $(OBJDIR)/tests/$1.exe, $(OBJDIR)/tests/$1.o, LIBARCH)
 $(call use-library, $(OBJDIR)/tests/$1.exe, $(OBJDIR)/tests/$1.o, PROTO)
+$(call use-library, $(OBJDIR)/tests/$1.exe, $(OBJDIR)/tests/$1.o, FATFS)
+$(call use-library, $(OBJDIR)/tests/$1.exe, $(OBJDIR)/tests/$1.o, ADFLIB)
+$(call use-library, $(OBJDIR)/tests/$1.exe, $(OBJDIR)/tests/$1.o, HFSUTILS)
+$(call use-library, $(OBJDIR)/tests/$1.exe, $(OBJDIR)/tests/$1.o, LIBUSBP)
 
 endef
 
 $(call declare-test,agg)
 $(call declare-test,amiga)
+$(call declare-test,applesingle)
 $(call declare-test,bitaccumulator)
 $(call declare-test,bytes)
 $(call declare-test,compression)
@@ -32,6 +37,7 @@ $(call declare-test,kryoflux)
 $(call declare-test,ldbs)
 $(call declare-test,proto)
 $(call declare-test,utils)
+$(call declare-test,vfs)
 
 $(call use-library, $(OBJDIR)/tests/agg.exe, $(OBJDIR)/tests/agg.o, AGG)
 $(call use-library, $(OBJDIR)/tests/agg.exe, $(OBJDIR)/tests/agg.o, STB)

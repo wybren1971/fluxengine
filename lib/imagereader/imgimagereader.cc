@@ -4,9 +4,10 @@
 #include "imagereader/imagereader.h"
 #include "image.h"
 #include "logger.h"
-#include "mapper.h"
 #include "lib/config.pb.h"
-#include "imginputoutpututils.h"
+#include "lib/layout.pb.h"
+#include "lib/proto.h"
+#include "lib/layout.h"
 #include "fmt/format.h"
 #include <algorithm>
 #include <iostream>
@@ -24,12 +25,13 @@ public:
         if (!inputFile.is_open())
             Error() << "cannot open input file";
 
-        if (!_config.img().tracks() || !_config.img().sides())
+        auto layout = config.layout();
+        if (!layout.tracks() || !layout.sides())
             Error() << "IMG: bad configuration; did you remember to set the "
-                       "tracks, sides and trackdata fields?";
+                       "tracks, sides and trackdata fields in the layout?";
 
         std::unique_ptr<Image> image(new Image);
-        for (const auto& p : getTrackOrdering(_config.img()))
+        for (const auto& p : Layout::getTrackOrdering())
         {
             int track = p.first;
             int side = p.second;
@@ -37,61 +39,26 @@ public:
             if (inputFile.eof())
                 break;
 
-            ImgInputOutputProto::TrackdataProto trackdata;
-            getTrackFormat(_config.img(), trackdata, track, side);
-
-            for (int sectorId : getSectors(trackdata))
+            auto trackLayout = Layout::getLayoutOfTrack(track, side);
+            for (int sectorId : trackLayout->logicalSectorOrder)
             {
-                Bytes data(trackdata.sector_size());
+                Bytes data(trackLayout->sectorSize);
                 inputFile.read((char*)data.begin(), data.size());
 
                 const auto& sector = image->put(track, side, sectorId);
                 sector->status = Sector::OK;
-                sector->logicalTrack = track;
-                sector->physicalTrack = Mapper::remapTrackLogicalToPhysical(track);
-                sector->logicalSide = sector->physicalHead = side;
-                sector->logicalSector = sectorId;
                 sector->data = data;
             }
         }
 
         image->calculateSize();
         const Geometry& geometry = image->getGeometry();
-        Logger() << fmt::format("IMG: read {} tracks, {} sides, {} kB total",
+        Logger() << fmt::format("IMG: read {} tracks, {} sides, {} kB total from {}",
             geometry.numTracks,
             geometry.numSides,
-            inputFile.tellg() / 1024);
+            inputFile.tellg() / 1024,
+			_config.filename());
         return image;
-    }
-
-    std::vector<unsigned> getSectors(
-        const ImgInputOutputProto::TrackdataProto& trackdata)
-    {
-        std::vector<unsigned> sectors;
-        switch (trackdata.sectors_oneof_case())
-        {
-            case ImgInputOutputProto::TrackdataProto::SectorsOneofCase::
-                kSectors:
-            {
-                for (int sectorId : trackdata.sectors().sector())
-                    sectors.push_back(sectorId);
-                break;
-            }
-
-            case ImgInputOutputProto::TrackdataProto::SectorsOneofCase::
-                kSectorRange:
-            {
-                int sectorId = trackdata.sector_range().start_sector();
-                for (int i = 0; i < trackdata.sector_range().sector_count();
-                     i++)
-                    sectors.push_back(sectorId + i);
-                break;
-            }
-
-            default:
-                Error() << "no list of sectors provided in track format";
-        }
-        return sectors;
     }
 };
 

@@ -1,16 +1,40 @@
 comment: 'Acorn DFS 100kB/200kB 3.5" or 5.25" 40- or 80-track SS (ro)'
 
+image_reader {
+	filename: "acorndfs.img"
+	img {}
+}
+
 image_writer {
 	filename: "acorndfs.img"
-	img {
-		trackdata {
-			sector_range {
-				start_sector: 0
-			}
+	img {}
+}
+
+layout {
+	tracks: 80
+	sides: 1
+	layoutdata {
+		sector_size: 256
+		physical {
+			start_sector: 0
+			count: 10
 		}
 	}
 }
 
+encoder {
+	ibm {
+		trackdata {
+			target_rotational_period_ms: 167
+			target_clock_period_us: 3.333
+			emit_iam: false
+			gap0: 80
+			gap2: 22
+			gap3: 34
+		}
+	}
+}
+			
 decoder {
 	ibm {
 		trackdata {
@@ -19,14 +43,7 @@ decoder {
 	}
 }
 
-tracks {
-	start: 0
-	end: 79
+filesystem {
+	acorndfs {}
 }
-
-heads {
-	start: 0
-	end: 0
-}
-
 

@@ -2,11 +2,17 @@ comment: 'Agat 840kB 5.25" 80-track DS (ro)'
 
 image_writer {
 	filename: "agat.img"
-	img {
-		trackdata {
-			sector_range {
-				start_sector: 0
-			}
+	img {}
+}
+
+layout {
+	tracks: 80
+	sides: 2
+	layoutdata {
+		sector_size: 256
+		physical {
+			start_sector: 0
+			count: 21
 		}
 	}
 }
@@ -14,15 +20,3 @@ image_writer {
 decoder {
 	agat {}
 }
-
-tracks {
-	start: 0
-	end: 79
-}
-
-heads {
-	start: 0
-	end: 1
-}
-
-

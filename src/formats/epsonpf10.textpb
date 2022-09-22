@@ -1,0 +1,39 @@
+comment: 'Epson PF-10 40-track DS DD (ro)'
+
+image_writer {
+	filename: "epsonpf10.img"
+	img {}
+}
+
+layout {
+	tracks: 40
+	sides: 2
+	layoutdata {
+		sector_size: 512
+		physical {
+			start_sector: 1
+			count: 9
+		}
+	}
+}
+
+decoder {
+	ibm {}
+}
+
+tpi: 48
+
+filesystem {
+	cpmfs {
+		filesystem_start {
+			track: 4
+		}
+		block_size: 2048
+		dir_entries: 64
+		padding {
+			amount: 1
+			every: 8
+		}
+	}
+}
+

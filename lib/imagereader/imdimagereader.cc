@@ -5,7 +5,7 @@
 #include "image.h"
 #include "proto.h"
 #include "logger.h"
-#include "mapper.h"
+#include "layout.h"
 #include "lib/config.pb.h"
 #include "fmt/format.h"
 #include <algorithm>
@@ -142,6 +142,8 @@ public:
         TrackHeader header = {0, 0, 0, 0, 0};
         TrackHeader previousheader = {0, 0, 0, 0, 0};
 
+        auto layout = config.mutable_layout();
+
         unsigned n = 0;
         unsigned headerPtr = 0;
         unsigned Modulation_Speed = 0;
@@ -229,8 +231,10 @@ public:
             }
 
 		    auto ibm = config.mutable_encoder()->mutable_ibm();
-           
             auto trackdata = ibm->add_trackdata();
+
+            auto layoutdata = layout->add_layoutdata();
+
             trackdata->set_target_clock_period_us(1e3 / Modulation_Speed);
             trackdata->set_target_rotational_period_ms(200);
 			if (trackSectorSize < 0)
@@ -240,15 +244,17 @@ public:
 				// per-track data
 				trackdata->set_track(header.track);
 				trackdata->set_head(header.Head);
-				trackdata->set_sector_size(sectorSize);
 				trackdata->set_use_fm(fm);
+
+				layoutdata->set_track(header.track);
+				layoutdata->set_side(header.Head);
+				layoutdata->set_sector_size(sectorSize);
 			}
 			else if (trackSectorSize != sectorSize)
 			{
 				Error() << "IMD: multiple sector sizes per track are "
 							"currently unsupported";
 			}
-            auto sectors = trackdata->mutable_sectors();
             
             //read the sectors
             for (int s = 0; s < header.numSectors; s++)
@@ -258,7 +264,6 @@ public:
 				int SectorID;
 				SectorID = sector_skew[s];
                 const auto& sector = image->put(header.track, header.Head, SectorID);
-				sector->logicalSector = SectorID;
                 //read the status of the sector
                 unsigned int Status_Sector = br.read_8();
                 headerPtr++;
@@ -367,26 +372,26 @@ public:
 				if (blnOptionalCylinderMap) //there was een optional cylinder map. write it to the sector
 				//The Sector Cylinder Map has one entry for each sector, and contains the logical Cylinder ID for the corresponding sector in the Sector Numbering Map.
 				{
-					sector->physicalTrack = Mapper::remapTrackLogicalToPhysical(header.track);
+					sector->physicalTrack = Layout::remapTrackLogicalToPhysical(header.track);
 					sector->logicalTrack = optionalsector_map[s];
 					blnOptionalCylinderMap = false;
 				}
 				else 
 				{
 					sector->logicalTrack = header.track;
-                    sector->physicalTrack = Mapper::remapTrackLogicalToPhysical(header.track);
+                    sector->physicalTrack = Layout::remapTrackLogicalToPhysical(header.track);
 				}
 				if (blnOptionalHeadMap) //there was een optional head map. write it to the sector
 				//The Sector Head Map has one entry for each sector, and contains the logical Head ID for the corresponding sector in the Sector Numbering Map.
 				{
-					sector->physicalHead = header.Head;
+					sector->physicalSide = header.Head;
 					sector->logicalSide = optionalhead_map[s];
 					blnOptionalHeadMap = false;
 				}
 				else 
 				{
 					sector->logicalSide = header.Head;
-                    sector->physicalHead = header.Head;
+                    sector->physicalSide = header.Head;
 				}
             }
 
@@ -408,19 +413,8 @@ public:
 				fm ? "FM" : "MFM",
 				Modulation_Speed, header.numSectors, sectorSize, (header.track+1) * trackSize / 1024);
 
-        if (!config.has_heads())
-        {
-            auto* heads = config.mutable_heads();
-            heads->set_start(0);
-            heads->set_end(geometry.numSides - 1);
-        }
-
-        if (!config.has_tracks())
-        {
-            auto* tracks = config.mutable_tracks();
-            tracks->set_start(0);
-            tracks->set_end(geometry.numTracks - 1);
-        }
+        layout->set_tracks(geometry.numTracks);
+        layout->set_sides(geometry.numSides);
 
         return image;
 

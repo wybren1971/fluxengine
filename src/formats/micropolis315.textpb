@@ -1,53 +1,8 @@
 comment: 'Micropolis MetaFloppy Mod II 315kB 5.25" SSDD hard-sectored'
 
-drive {
-	hard_sector_count: 16
-}
+include: '_micropolis'
 
-image_reader {
-	filename: "micropolis.img"
-	img {
-		tracks: 77
-		sides: 1
-		trackdata {
-			sector_size: 256
-			sector_range {
-				start_sector: 0
-				sector_count: 16
-			}
-		}
-	}
+layout {
+	tracks: 77
+	sides: 1
 }
-
-image_writer {
-	filename: "micropolis.img"
-	img {
-		tracks: 77
-		trackdata {
-			sector_size: 256
-			sector_range {
-				start_sector: 0
-				sector_count: 16
-			}
-		}
-	}
-}
-
-encoder {
-	micropolis {}
-}
-
-decoder {
-	micropolis {}
-}
-
-tracks {
-	start: 0
-	end: 76
-}
-
-heads {
-	start: 0
-	end: 0
-}
-

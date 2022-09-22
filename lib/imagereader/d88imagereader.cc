@@ -5,7 +5,6 @@
 #include "image.h"
 #include "proto.h"
 #include "logger.h"
-#include "mapper.h"
 #include "lib/config.pb.h"
 #include "fmt/format.h"
 #include <algorithm>
@@ -82,6 +81,7 @@ public:
                 config.set_tpi(48);
         }
 
+		auto layout = config.mutable_layout();
         std::unique_ptr<Image> image(new Image);
         for (int track = 0; track < trackTableSize / 4; track++)
         {
@@ -99,7 +99,9 @@ public:
             auto trackdata = ibm->add_trackdata();
             trackdata->set_target_clock_period_us(1e3 / clockRate);
             trackdata->set_target_rotational_period_ms(167);
-            auto sectors = trackdata->mutable_sectors();
+
+			auto layoutdata = layout->add_layoutdata();
+            auto physical = layoutdata->mutable_physical();
 
             for (int sectorInTrack = 0; sectorInTrack < currentSectorsInTrack;
                  sectorInTrack++)
@@ -149,9 +151,13 @@ public:
                     trackSectorSize = sectorSize;
                     // this is the first sector we've read, use it settings for
                     // per-track data
+
+                    layoutdata->set_track(track);
+                    layoutdata->set_side(head);
+                    layoutdata->set_sector_size(sectorSize);
+
                     trackdata->set_track(track);
                     trackdata->set_head(head);
-                    trackdata->set_sector_size(sectorSize);
                     trackdata->set_use_fm(fm);
                     if (fm)
                     {
@@ -160,16 +166,25 @@ public:
                         trackdata->set_dam_byte(0xf56f);
                     }
                     // create timings to approximately match N88-BASIC
-                    if (sectorSize <= 128)
-                    {
-                        trackdata->set_gap0(0x1b);
-                        trackdata->set_gap2(0x09);
-                        trackdata->set_gap3(0x1b);
-                    }
-                    else if (sectorSize <= 256)
-                    {
-                        trackdata->set_gap0(0x36);
-                        trackdata->set_gap3(0x36);
+                    if (clockRate == 300) {
+                        if (sectorSize <= 256)
+                        {
+                            trackdata->set_gap0(0x1b);
+                            trackdata->set_gap2(0x14);
+                            trackdata->set_gap3(0x1b);
+                        }
+                    } else {
+                        if (sectorSize <= 128)
+                        {
+                            trackdata->set_gap0(0x1b);
+                            trackdata->set_gap2(0x09);
+                            trackdata->set_gap3(0x1b);
+                        }
+                        else if (sectorSize <= 256)
+                        {
+                            trackdata->set_gap0(0x36);
+                            trackdata->set_gap3(0x36);
+                        }
                     }
                 }
                 else if (trackSectorSize != sectorSize)
@@ -181,13 +196,9 @@ public:
                 inputFile.read((char*)data.begin(), data.size());
                 const auto& sector = image->put(track, head, sectorId);
                 sector->status = Sector::OK;
-                sector->logicalTrack = track;
-                sector->physicalTrack = Mapper::remapTrackLogicalToPhysical(track);
-                sector->logicalSide = sector->physicalHead = head;
-                sector->logicalSector = sectorId;
                 sector->data = data;
 
-                sectors->add_sector(sectorId);
+                physical->add_sector(sectorId);
             }
 
             if (mediaFlag != 0x20)
@@ -204,19 +215,8 @@ public:
             geometry.numTracks,
             geometry.numSides);
 
-        if (!config.has_heads())
-        {
-            auto* heads = config.mutable_heads();
-            heads->set_start(0);
-            heads->set_end(geometry.numSides - 1);
-        }
-
-        if (!config.has_tracks())
-        {
-            auto* tracks = config.mutable_tracks();
-            tracks->set_start(0);
-            tracks->set_end(geometry.numTracks - 1);
-        }
+		layout->set_tracks(geometry.numTracks);
+		layout->set_sides(geometry.numSides);
 
         return image;
     }

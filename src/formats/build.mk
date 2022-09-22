@@ -1,14 +1,24 @@
 FORMATS = \
+	_acornadfs8 \
+	_acornadfs32 \
+	_atari \
+	_micropolis \
+	_northstar \
+	_mx \
 	40track_drive \
-	acornadfs \
+	acornadfs160 \
+	acornadfs320 \
+	acornadfs640 \
+	acornadfs800 \
+	acornadfs1600 \
 	acorndfs \
 	aeslanier \
 	agat840 \
 	amiga \
-	ampro \
+	ampro400 \
+	ampro800 \
 	apple2_drive \
 	apple2 \
-	appledos \
 	atarist360 \
 	atarist370 \
 	atarist400 \
@@ -22,34 +32,37 @@ FORMATS = \
 	brother240 \
 	commodore1541 \
 	commodore1581 \
+	cmd_fd2000 \
 	eco1 \
+	epsonpf10 \
 	f85 \
 	fb100 \
 	hp9121 \
 	hplif770 \
+	ibm \
 	ibm1200 \
 	ibm1232 \
 	ibm1440 \
 	ibm180 \
 	ibm360 \
 	ibm720 \
-	ibm \
 	mac400 \
 	mac800 \
 	micropolis143 \
 	micropolis287 \
 	micropolis315 \
 	micropolis630 \
-	mx \
+	mx110 \
+	mx220_ds \
+	mx220_ss \
+	mx440 \
 	n88basic \
 	northstar175 \
 	northstar350 \
 	northstar87 \
-	prodos \
 	rx50 \
 	shugart_drive \
 	tids990 \
-	vgi \
 	victor9k_ds \
 	victor9k_ss \
 	zilogmcz \
@@ -62,7 +75,7 @@ $(OBJDIR)/src/formats/format_%.cc: $(OBJDIR)/protoencode_ConfigProto.exe src/for
 
 OBJS += $(patsubst %, $(OBJDIR)/src/formats/format_%.o, $(FORMATS))
 
-$(OBJDIR)/src/formats/table.cc: scripts/mktable.sh
+$(OBJDIR)/src/formats/table.cc: scripts/mktable.sh src/formats/build.mk
 	@mkdir -p $(dir $@)
 	@echo MKTABLE $@
 	@scripts/mktable.sh formats $(FORMATS) > $@

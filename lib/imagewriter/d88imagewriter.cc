@@ -4,7 +4,7 @@
 #include "imagewriter/imagewriter.h"
 #include "image.h"
 #include "lib/config.pb.h"
-#include "imginputoutpututils.h"
+#include "lib/layout.h"
 #include "fmt/format.h"
 #include "logger.h"
 #include <algorithm>
@@ -14,7 +14,7 @@
 static int countl_zero(uint32_t value)
 {
 	int count = 0;
-	while (!(value & 0x8000000))
+	while (!(value & 0x80000000))
 	{
 		value <<= 1;
 		count++;
@@ -65,7 +65,7 @@ public:
 			headerWriter.write_le32(trackOffset);
 			int side = track & 1;
 			std::vector<std::shared_ptr<const Sector>> sectors;
-			for (int sectorId = 0; sectorId < geometry.numSectors; sectorId++)
+			for (int sectorId = geometry.firstSector; sectorId <= geometry.numSectors; sectorId++)
 			{
 				const auto& sector = image.get(track >> 1, side, sectorId);
 				if (sector)
